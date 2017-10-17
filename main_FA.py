@@ -34,6 +34,7 @@ def main():
     learning_rate = 1e-4
     loss_history = []
     accuracy_history = []
+    align_history = []
     for i in range(len(test)+1):
         mnist = input_data.read_data_sets('mnist',
                                     one_hot=True)
@@ -54,6 +55,7 @@ def main():
 
         _loss = []
         _accuracy = []
+        _align = []
         for t in range(6000):
 
             if i == 0 and t > 2000:
@@ -79,20 +81,24 @@ def main():
             # Backprop to compute gradients of w1 and w2 with respect to loss
             grad_y_pred = (y_pred - y)
             grad_w2 = h_relu.T.dot(grad_y_pred)
-            if i == 0:
+            if i == 0: # normal learning # if t <2000 # abrupt learning
                 grad_h_relu = grad_y_pred.dot(w2.T)
+                _align.append(1)
             else:
                 grad_h_relu = grad_y_pred.dot(test[i-1].T)
                 trace = np.trace(grad_y_pred.dot(w2.T).dot(test[i-1]).dot(grad_y_pred.T))/100
-                if trace < 0: print('Not aligned')
+                if trace < 0:
+                    print('Not aligned')
+                    _align.append(-1)
+                else:
+                    _align.append(1)
             grad_h = grad_h_relu.copy()
             grad_h[h < 0] = 0
             grad_w1 = x.T.dot(grad_h)
 
             # Update weights
-            '''
             if i != 0:
-                if t<2000:
+                if t<2000: # stage learning
                     w1 -= learning_rate * grad_w1
                 elif t< 4000:
                     w2 -= learning_rate * grad_w2
@@ -100,14 +106,16 @@ def main():
                     w1 -= learning_rate * grad_w1                   
             else:
                 w1 -= learning_rate * grad_w1
-                w2 -= learning_rate * grad_w2'''
-            w1 -= learning_rate * grad_w1
-            w2 -= learning_rate * grad_w2
+                w2 -= learning_rate * grad_w2
+            '''
+            w1 -= learning_rate * grad_w1 # normal learning
+            w2 -= learning_rate * grad_w2'''
                 
         loss_history.append(_loss)
         accuracy_history.append(_accuracy)
+        align_history.append(_align)
         
-    plot_learning_curve('Learning Curve',accuracy_history,loss_history,['BP','FA','FA-big','FA-small'],ylim=None)
-
+    plot_learning_curve('Learning Curve',accuracy_history,loss_history,align_history,['BP','FA','FA-big','FA-small'],ylim=None)
+    
 if __name__ == '__main__':
     main()
