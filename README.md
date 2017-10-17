@@ -11,11 +11,14 @@ B-small is B shrinks 100 times (equivalent to shrink the learning rate 100 times
 **normal BP/FA**:
 ![](normal_learning.png)
 
-**abrupt BP(2000 steps)->FA(4000 steps)**:
+**abrupt learning**:
+from paper:
+![](abrupt.png)
+reproduce result:
 ![](abrupt_learning.png)
 
 **stage learning**:
 From paper:
-![](abrupt.png)
+![](stage.png)
 reproduce result:
-![](abrupt_learning.png)
+![](stage_learning.png)
